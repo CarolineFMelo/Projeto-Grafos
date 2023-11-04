@@ -117,7 +117,6 @@ public class AdjacencyMatrix implements Grafo {
 
 	@Override
 	public ArrayList<Aresta> arestasEntre(Vertice origem, Vertice destino) throws Exception {
-		//refazer esse metodo
 		ArrayList<Aresta> edgesBetweenVertices = new ArrayList<>();
 	    int numVertices = numeroDeVertices();
 
