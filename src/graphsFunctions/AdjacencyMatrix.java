@@ -29,8 +29,6 @@ public class AdjacencyMatrix implements Grafo {
 				adicionarAresta(v_origin, v_destiny, weight);
 			}
 		}
-		
-		ArrayList<Aresta> a = arestasEntre(v.get(4), v.get(3));
 	}
 
 	@Override
