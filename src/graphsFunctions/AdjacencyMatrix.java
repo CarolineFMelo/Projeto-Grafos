@@ -15,10 +15,12 @@ public class AdjacencyMatrix implements Grafo {
 	public AdjacencyMatrix(ArrayList<String> file) throws Exception {
 		int numVertices = Integer.parseInt(file.get(0));
 		this.weights = new double[numVertices][numVertices];
+		
 		for(int i = 1; i < file.size(); i++) {
 			line = file.get(i).split(" ");
 			v.add(new Vertice(Integer.parseInt(line[0])));
 		}
+		
 		for(int i = 1; i < file.size(); i++) {
 			line = file.get(i).split(" ");
 			for(int j = 1; j < line.length; j++) {
@@ -77,6 +79,7 @@ public class AdjacencyMatrix implements Grafo {
 		for(int i = 0; i < weights.length; i++) {
 			cont++;
 		}
+		
 		return cont;
 	}
 
