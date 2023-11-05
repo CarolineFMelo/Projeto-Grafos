@@ -24,10 +24,10 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 			this.graph = new AdjacencyMatrix(file);
 			break;
 		case MATRIZ_DE_INCIDENCIA:
-			//this.graph = new IncidenceMatrix(numberOfVertices, file);
+			//this.graph = new IncidenceMatrix(file);
 			break;
 		case LISTA_DE_ADJACENCIA:
-			//this.graph = new AdjacencyList(numberOfVertices, file);
+			this.graph = new AdjacencyList(file);
 			break;
 		}
 		

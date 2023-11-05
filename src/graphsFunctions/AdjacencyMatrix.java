@@ -10,7 +10,7 @@ public class AdjacencyMatrix implements Grafo {
 	
 	public double weights[][];
 	public String[] line = null;
-	public ArrayList<Vertice> v = new ArrayList<Vertice>(); 
+	public ArrayList<Vertice> v = new ArrayList<Vertice>();
 	
 	public AdjacencyMatrix(ArrayList<String> file) throws Exception {
 		int numVertices = Integer.parseInt(file.get(0));
@@ -28,7 +28,13 @@ public class AdjacencyMatrix implements Grafo {
 				Vertice v_origin = v.get(Integer.parseInt(line[0]));
 				Vertice v_destiny = v.get(Integer.parseInt(edge[0]));
 				int weight = Integer.parseInt(edge[1].replace(";", ""));
-				adicionarAresta(v_origin, v_destiny, weight);
+				
+				if(weight <= 1) {
+					adicionarAresta(v_origin, v_destiny);
+				}
+				else {
+					adicionarAresta(v_origin, v_destiny, weight);
+				}
 			}
 		}
 	}
@@ -40,9 +46,6 @@ public class AdjacencyMatrix implements Grafo {
 
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino, double peso) throws Exception {
-		if(peso < 1) {
-			peso = 1;
-		}
 		this.weights[origem.id()][destino.id()] = peso;
 	}
 
@@ -56,16 +59,14 @@ public class AdjacencyMatrix implements Grafo {
 		int degree = 0;
 		int numVertices = numeroDeVertices();
 
-		//Check the row corresponding to vertex v
 		for(int i = 0; i < numVertices; i++) {
 			if(this.weights[vertice.id()][i] > 0) {
 				degree++;
 			}
 		}
 
-		//Check the column corresponding to vertex v
 		for(int i = 0; i < numVertices; i++) {
-			if(this.weights[i][vertice.id()] == 1) {
+			if(this.weights[i][vertice.id()] > 0) {
 				degree++;
 			}
 		}
@@ -123,7 +124,6 @@ public class AdjacencyMatrix implements Grafo {
 		ArrayList<Aresta> edgesBetweenVertices = new ArrayList<>();
 	    int numVertices = numeroDeVertices();
 
-	    //Check the line corresponding to the origin vertex
 	    for(int i = 0; i < numVertices; i++) {
 	        if(this.weights[origem.id()][i] > 0) {
 	            if(i == destino.id()) {
