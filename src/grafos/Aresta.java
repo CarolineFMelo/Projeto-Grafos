@@ -14,17 +14,24 @@ public class Aresta {
     private Vertice origem;
     private Vertice destino;
     private double peso;
+    private int id;
     
-    public Aresta( Vertice origem, Vertice destino ){
+    public Aresta( Vertice origem, Vertice destino, int id ){
         this.origem = origem;
         this.destino = destino;
         this.peso = 1;
+        this.id = id;
     }
     
-    public Aresta( Vertice origem, Vertice destino, double peso ){
+    public Aresta( Vertice origem, Vertice destino, int id, double peso ){
         this.origem = origem;
         this.destino = destino;
         this.peso = peso;
+        this.id = id;
+    }
+    
+    public int getId() {
+    	return this.id;
     }
 
     public Vertice origem() {

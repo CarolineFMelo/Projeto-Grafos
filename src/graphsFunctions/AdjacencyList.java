@@ -15,11 +15,13 @@ public class AdjacencyList implements Grafo {
 		int numVertices = Integer.parseInt(file.get(0));
 		this.listAdj = new ArrayList<ArrayList<Cell>>();
 		
+		//add the vertices to the ArrayList
 		for(int i = 1; i < file.size(); i++) {
 			line = file.get(i).split(" ");
 			v.add(new Vertice(Integer.parseInt(line[0])));
 		}
 		
+		//initialize the list
 		for (int i = 0; i < numVertices; i++) {
 		    listAdj.add(new ArrayList<Cell>());
 		}
@@ -41,7 +43,6 @@ public class AdjacencyList implements Grafo {
 				}
 			}
 		}
-		arestasEntre(v.get(0), v.get(1));
 	}
 
 	@Override
@@ -56,6 +57,7 @@ public class AdjacencyList implements Grafo {
 
 	@Override
 	public boolean existeAresta(Vertice origem, Vertice destino) {
+		//traverses the arrayList of cells
 		for(Cell cell : listAdj.get(origem.id())) {
             if(cell.getVertex() == destino) {
             	return true;
@@ -69,6 +71,7 @@ public class AdjacencyList implements Grafo {
 	public int grauDoVertice(Vertice vertice) throws Exception {
 		int cont = 0;
 		
+		//traverses the arrayList of cells
 		for(Cell cell : listAdj.get(vertice.id())) {
             cont++;
         }
@@ -80,6 +83,7 @@ public class AdjacencyList implements Grafo {
 	public int numeroDeVertices() {
 		int cont = 0;
 		
+		//traverses the adjacent list
 		for (ArrayList<Cell> listOfCells : listAdj) {
             cont++;
         }
@@ -91,6 +95,7 @@ public class AdjacencyList implements Grafo {
 	public int numeroDeArestas() {
 		int cont = 0;
 		
+		//traverses the adjacent list
 		for (ArrayList<Cell> listOfCells : listAdj) {
             for (Cell cell : listOfCells) {
                 cont++;
@@ -105,6 +110,7 @@ public class AdjacencyList implements Grafo {
 		ArrayList<Vertice> adjacentVertices = new ArrayList<Vertice>();
 		int numVertices = numeroDeVertices();
 
+		//traverses the arrayList of cells
 		for(Cell cell : listAdj.get(vertice.id())) {
             adjacentVertices.add(cell.getVertex());
         }
@@ -114,6 +120,7 @@ public class AdjacencyList implements Grafo {
 
 	@Override
 	public void setarPeso(Vertice origem, Vertice destino, double peso) throws Exception {
+		//traverses the arrayList of cells
 		for(Cell cell : listAdj.get(origem.id())) {
             if(cell.getVertex() == destino) {
             	cell.setWeight(peso);
@@ -125,10 +132,13 @@ public class AdjacencyList implements Grafo {
 	public ArrayList<Aresta> arestasEntre(Vertice origem, Vertice destino) throws Exception {
 		ArrayList<Aresta> edgesBetweenVertices = new ArrayList<>();
 	    int numVertices = numeroDeVertices();
-
+	    int numEdges = 0;
+	    
+	    //traverses the arrayList of cells
 	    for(Cell cell : listAdj.get(origem.id())) {
             if(cell.getVertex() == destino) {
-            	edgesBetweenVertices.add(new Aresta(origem, destino));
+            	edgesBetweenVertices.add(new Aresta(origem, destino, numEdges));
+            	numEdges++;
             }
         }
 

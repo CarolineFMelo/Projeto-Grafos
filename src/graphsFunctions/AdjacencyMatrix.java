@@ -16,6 +16,7 @@ public class AdjacencyMatrix implements Grafo {
 		int numVertices = Integer.parseInt(file.get(0));
 		this.weights = new double[numVertices][numVertices];
 		
+		//add the vertices to the ArrayList
 		for(int i = 1; i < file.size(); i++) {
 			line = file.get(i).split(" ");
 			v.add(new Vertice(Integer.parseInt(line[0])));
@@ -23,6 +24,7 @@ public class AdjacencyMatrix implements Grafo {
 		
 		for(int i = 1; i < file.size(); i++) {
 			line = file.get(i).split(" ");
+			
 			for(int j = 1; j < line.length; j++) {
 				String[] edge = line[j].split("-");
 				Vertice v_origin = v.get(Integer.parseInt(line[0]));
@@ -59,12 +61,14 @@ public class AdjacencyMatrix implements Grafo {
 		int degree = 0;
 		int numVertices = numeroDeVertices();
 
+		//calculates the exit degree of the vertex
 		for(int i = 0; i < numVertices; i++) {
 			if(this.weights[vertice.id()][i] > 0) {
 				degree++;
 			}
 		}
 
+		//calculates the in-degree of the vertex
 		for(int i = 0; i < numVertices; i++) {
 			if(this.weights[i][vertice.id()] > 0) {
 				degree++;
@@ -77,7 +81,9 @@ public class AdjacencyMatrix implements Grafo {
 	@Override
 	public int numeroDeVertices() {
 		int cont = 0;
-		for(int i = 0; i < weights.length; i++) {
+		
+		//traverses the arrayList of vertices
+		for(int i = 0; i < v.size(); i++) {
 			cont++;
 		}
 		
@@ -89,6 +95,7 @@ public class AdjacencyMatrix implements Grafo {
 		int numEdges = 0;
 		int numVertices = numeroDeVertices();
 
+		//traverses the matrix
 		for(int i = 0; i < numVertices; i++) {
 			for(int j = 0; j < numVertices; j++) {
 				if(this.weights[i][j] > 0) {
@@ -105,6 +112,7 @@ public class AdjacencyMatrix implements Grafo {
 		ArrayList<Vertice> adjacentVertices = new ArrayList<Vertice>();
 		int numVertices = numeroDeVertices();
 
+		//traverses the matrix in the line corresponding to the vertex
 		for(int i = 0; i < numVertices; i++) {
 			if(this.weights[vertice.id()][i] > 0) {
 				adjacentVertices.add(new Vertice(i));
@@ -123,11 +131,14 @@ public class AdjacencyMatrix implements Grafo {
 	public ArrayList<Aresta> arestasEntre(Vertice origem, Vertice destino) throws Exception {
 		ArrayList<Aresta> edgesBetweenVertices = new ArrayList<>();
 	    int numVertices = numeroDeVertices();
+	    int numEdges = 0;
 
+	    //traverses the matrix in the line corresponding to the vertex
 	    for(int i = 0; i < numVertices; i++) {
 	        if(this.weights[origem.id()][i] > 0) {
 	            if(i == destino.id()) {
-	                edgesBetweenVertices.add(new Aresta(origem, destino));
+	                edgesBetweenVertices.add(new Aresta(origem, destino, numEdges));
+	                numEdges++;
 	            }
 	        }
 	    }
