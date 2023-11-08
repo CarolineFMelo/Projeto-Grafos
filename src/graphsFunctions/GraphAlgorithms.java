@@ -136,56 +136,64 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 
 	@Override
 	public Collection<Aresta> buscaEmLargura(Grafo g, int v) {
-		int color[] = new int[this.graph.numeroDeVertices()];
-		
-		for(int u = v; u < graph.numeroDeVertices(); u++) {
-			color[u] = branco;
-			this.d[u] = Integer.MAX_VALUE;
-			this.predecessor[u] = -1;
-		}
-		
-		for(int u = v; u < graph.numeroDeVertices(); u++) {
-			if(color[u] == branco) {
-				this.visitBfs(u, color);
-			}
-		}
-		
-		//prints discovery time and father of the vertex
-		for(int i = v; i < this.graph.numeroDeVertices(); i++) {
-			System.out.println("Vertice " + i + "\nTempo de descoberta: " + this.d[i] + "\nPai do vertice: " + this.predecessor[i] + "\n");
-		}
-		return null;
+	    int color[] = new int[this.graph.numeroDeVertices()];
+	    int tempoDescoberta[] = new int[this.graph.numeroDeVertices()];
+
+	    for(int u = v; u < graph.numeroDeVertices(); u++) {
+	        color[u] = branco;
+	        tempoDescoberta[u] = -1;
+	        this.d[u] = Integer.MAX_VALUE;
+	        this.predecessor[u] = -1;
+	    }
+	    int tempo = 0;
+
+	    for(int u = v; u < graph.numeroDeVertices(); u++) {
+	        if(color[u] == branco) {
+	            tempo = this.visitBfs(u, color, tempo, tempoDescoberta);
+	        }
+	    }
+
+	    for(int i = v; i < this.graph.numeroDeVertices(); i++) {
+	        System.out.println("Vertice " + i + "\nTempo de descoberta: " + tempoDescoberta[i] + "\nPai do vertice: " + this.predecessor[i] + "\n");
+	    }
+
+	    return null;
 	}
-	
-	//obtains the smallest number of edges between the vertex v and every vertex that can be reached
-	public void visitBfs(int u, int color[]) {
-		color[u] = cinza;
-		this.d[u] = 0;
-		Queue<Integer> queue = new LinkedList<Integer>();
-		queue.add(u);
-		
-		while(!queue.isEmpty()) {
-			Integer aux = queue.poll();
-			u = aux.intValue();
-			
-			if(!this.graph.adjListEmpty(u)) {
-				Aresta a = this.graph.firstAdj(u);
-				
-				while(a != null) {
-					int v = a.destino().id();
-					
-					if(color[v] == branco) {
-						color[v] = cinza;
-						this.d[v] = this.d[v] + 1;
-						this.predecessor[v] = u;
-						queue.add(v);
-					}
-					a = this.graph.nextAdj(u);
-				}
-			}
-			color[u] = preto;
-		}
+
+	//obtains the smallest number of edges between the vertex v and every vertex that can be reached and return discovery time
+	public int visitBfs(int u, int color[], int tempo, int tempoDescoberta[]) {
+	    color[u] = cinza;
+	    this.d[u] = 0;
+	    Queue<Integer> queue = new LinkedList<Integer>();
+	    queue.add(u);
+
+	    while(!queue.isEmpty()) {
+	        Integer aux = queue.poll();
+	        u = aux.intValue();
+	        tempoDescoberta[u] = tempo;
+	        tempo++;
+
+	        if(!this.graph.adjListEmpty(u)) {
+	            Aresta a = this.graph.firstAdj(u);
+
+	            while(a != null) {
+	                int v = a.destino().id();
+
+	                if(color[v] == branco) {
+	                    color[v] = cinza;
+	                    this.d[v] = this.d[v] + 1;
+	                    this.predecessor[v] = u;
+	                    queue.add(v);
+	                }
+	                a = this.graph.nextAdj(u);
+	            }
+	        }
+	        color[u] = preto;
+	    }
+
+	    return tempo;
 	}
+
 
 	@Override
 	public Collection<Aresta> buscaEmProfundidade(Grafo g, int v) {
