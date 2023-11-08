@@ -97,4 +97,16 @@ public interface Grafo {
      */
     public ArrayList<Vertice> vertices();
     
+    //retorna o peso da aresta
+    public double getPeso(Vertice origem, Vertice destino);
+    
+    //retorna true caso lista de adjacentes vazia
+    public boolean adjListEmpty(int vId);
+    
+    //retorna a primeira aresta que o vertice v participa
+    public Aresta firstAdj(int vId);
+    
+    //retorna a proxima aresta que o vertice c participa
+    public Aresta nextAdj(int vId);
+    
 }
