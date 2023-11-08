@@ -13,6 +13,7 @@ public class AdjacencyMatrix implements Grafo {
 	public ArrayList<Vertice> v = new ArrayList<Vertice>();
 	public ArrayList<Aresta> a = new ArrayList<Aresta>();
 	int numEdges = 0;
+	private int pos[];
 	
 	public AdjacencyMatrix(ArrayList<String> file) throws Exception {
 		int numVertices = Integer.parseInt(file.get(0));
@@ -40,6 +41,12 @@ public class AdjacencyMatrix implements Grafo {
 					adicionarAresta(v_origin, v_destiny, weight);
 				}
 			}
+		}
+		
+		//initialize vector to position
+		this.pos = new int[numVertices];
+		for(int i = 0; i < numVertices; i++) {
+			this.pos[i] = -1;
 		}
 	}
 
@@ -162,6 +169,39 @@ public class AdjacencyMatrix implements Grafo {
 	@Override
 	public ArrayList<Vertice> vertices() {
 		return v;
+	}
+
+	@Override
+	public boolean adjListEmpty(int vId) {
+		for(int i = 0; i < numeroDeVertices(); i++) {
+			if(this.weights[vId][i] > 0) return false;
+		}
+		return true;
+	}
+
+	@Override
+	public Aresta firstAdj(int vId) {
+		this.pos[vId] = -1;
+		return this.nextAdj(vId);
+	}
+
+	@Override
+	public Aresta nextAdj(int vId) {
+		this.pos[vId]++;
+		while((this.pos[vId] < this.numeroDeVertices()) && (existeAresta(v.get(vId), v.get(pos[vId])) == false)) {
+			this.pos[vId]++;
+		}
+		if(this.pos[vId] == this.numeroDeVertices()) {
+			return null;
+		}
+		else {
+			return new Aresta(v.get(vId), v.get(this.pos[vId]), vId, getPeso(v.get(vId), v.get(this.pos[vId])));
+		}
+	}
+
+	@Override
+	public double getPeso(Vertice origem, Vertice destino) {
+		return this.weights[origem.id()][destino.id()];
 	}
 
 }

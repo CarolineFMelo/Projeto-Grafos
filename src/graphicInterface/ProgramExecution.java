@@ -33,7 +33,7 @@ public class ProgramExecution {
 		
 		//ask the function to run
 		String function = null;
-		System.out.println("Escolha a função a ser executada:\n[1]Busca em profundidade\n[2]Busca em largura\n[3]Árvore geradora mínima\n[4]Caminho mínimo\n[5]Fluxo máximo\nDigite 0 para encerrar execucao");
+		System.out.println("Escolha a função a ser executada:\n[1]Busca em profundidade\n[2]Busca em largura\n[3]Árvore geradora mínima\n[4]Caminho mínimo\n[5]Fluxo máximo\n[0]Encerra execucao");
 		function = scn.nextLine();
 		ga.forwardFunction(function);
 		scn.close();

@@ -34,7 +34,7 @@ public interface AlgoritmosEmGrafos {
      * @param g Grafo
      * @return as arestas da floresta resultante
      */
-    public Collection<Aresta> buscaEmProfundidade (Grafo g);
+    public Collection<Aresta> buscaEmProfundidade (Grafo g, int v);
     
     /**
      * Função que indica o menor caminho entre dois pontos. Nesta função, é

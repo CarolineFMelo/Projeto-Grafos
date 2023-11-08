@@ -9,6 +9,13 @@ import grafos.*;
 public class GraphAlgorithms implements AlgoritmosEmGrafos {
 	
 	public Grafo graph;
+	private int n = 0;
+	private int d[] = null;
+	private int t[] = null;
+	private int predecessor[] = null;
+	public static final byte branco = 0;
+	public static byte cinza = 1;
+	public static byte preto = 2;
 
 	@Override
 	public Grafo carregarGrafo(String path, TipoDeRepresentacao t) throws Exception {
@@ -32,13 +39,20 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 			break;
 		}
 		
+		this.n = graph.numeroDeVertices();
+		this.d = new int[n];
+		this.t = new int[n];
+		this.predecessor = new int[n];
+
 		return null;
 	}
 	
+	//run chosen function
 	public void forwardFunction(String function) {
 		switch(function) {
 			case "1":
-				buscaEmProfundidade(graph);
+				int a = scannerFunctionForVertice();
+				buscaEmProfundidade(graph, a);
 				break;
 			case "2":
 				//buscaEmLargura(graph);
@@ -47,8 +61,8 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 				//agmUsandoKruskall(graph);
 				break;
 			case "4":
-				//int v[] = scannerFunction();
-	        	//caminhoMaisCurto(this.graph, this.graph.vertices().get(v[0]), this.graph.vertices().get(v[1]));
+				int v[] = scannerFunctionForOriginAndDestiny();
+	        	caminhoMaisCurto(this.graph, this.graph.vertices().get(v[0]), this.graph.vertices().get(v[1]));
 				break;
 			case "5":
 				//custoDoCaminho();
@@ -56,7 +70,33 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 		}
 	}
 	
-	public int[] scannerFunction() {
+	//get information from keyboard
+	public int scannerFunctionForVertice() {
+		int answer = 0;
+		Scanner ask = new Scanner(System.in);
+		System.out.println("Digite o vertice:");
+		if(ask.hasNextLine()) {
+		    String v = ask.nextLine();
+		    int vertex = Integer.parseInt(v);
+		    //checks whether the inserted vertex are valid
+	        if(vertex >= 0 && vertex < this.graph.vertices().size()) {
+	            answer = vertex;
+	        }
+	        else {
+	            System.out.println("Vertice invalido.");
+	        }
+		}
+		else {
+		    System.out.println("Entrada invalida para o vertice.");
+		}
+
+		ask.close();
+		
+		return answer;
+	}
+	
+	//get information from keyboard
+	public int[] scannerFunctionForOriginAndDestiny() {
 		int answer[] = new int[2];
 		Scanner ask = new Scanner(System.in);
 		System.out.println("Digite o vertice de origem:");
@@ -74,7 +114,7 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 		            answer[1] = destino;
 		        }
 		        else {
-		            System.out.println("Vertice invalidos.");
+		            System.out.println("Vertice invalido.");
 		        }
 		    }
 		    else {
@@ -97,9 +137,50 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 	}
 
 	@Override
-	public Collection<Aresta> buscaEmProfundidade(Grafo g) {
-		// TODO Auto-generated method stub
+	public Collection<Aresta> buscaEmProfundidade(Grafo g, int v) {
+		int tempo = 0;
+		int cor[] = new int[this.graph.numeroDeVertices()];
+		
+		for(int u = 0; u < graph.numeroDeVertices(); u++) {
+			cor[u] = branco;
+			this.predecessor[u] = -1;
+		}
+		for(int u = 0; u < graph.numeroDeVertices(); u++) {
+			if(cor[u] == branco) {
+				tempo = this.visitDfs(u, tempo, cor);
+			}
+		}
+		
+		//prints discovery and completion times
+		for(int i = 0; i < this.graph.numeroDeVertices(); i++) {
+			System.out.println("Vertice " + i + "\nTempo de descoberta: " + this.d[i] + "\nTempo de finalização: " + this.t[i]);
+		}
+
 		return null;
+	}
+	
+	//visits blank vertex and returns time
+	private int visitDfs(int u, int tempo, int cor[]) {
+		cor[u] = cinza;
+		this.d[u] = ++tempo;
+		
+		if(!this.graph.adjListEmpty(u)) {
+			Aresta a = this.graph.firstAdj(u);
+			
+			while(a != null) {
+				int v = a.destino().id();
+				
+				if(cor[v] == branco) {
+					this.predecessor[v] = u;
+					tempo = this.visitDfs(v, tempo, cor);
+				}
+				a = this.graph.nextAdj(u);
+			}
+		}
+		cor[u] = preto;
+		this.t[u] = ++tempo;
+		
+		return tempo;
 	}
 
 	@Override
