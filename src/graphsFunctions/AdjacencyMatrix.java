@@ -11,6 +11,8 @@ public class AdjacencyMatrix implements Grafo {
 	public double weights[][];
 	public String[] line = null;
 	public ArrayList<Vertice> v = new ArrayList<Vertice>();
+	public ArrayList<Aresta> a = new ArrayList<Aresta>();
+	int numEdges = 0;
 	
 	public AdjacencyMatrix(ArrayList<String> file) throws Exception {
 		int numVertices = Integer.parseInt(file.get(0));
@@ -43,12 +45,16 @@ public class AdjacencyMatrix implements Grafo {
 
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino) throws Exception {
+		a.add(new Aresta(origem, destino, numEdges));
 		this.weights[origem.id()][destino.id()] = 1;
+		numEdges++;
 	}
 
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino, double peso) throws Exception {
+		a.add(new Aresta(origem, destino, numEdges, peso));
 		this.weights[origem.id()][destino.id()] = peso;
+		numEdges++;
 	}
 
 	@Override
@@ -125,6 +131,13 @@ public class AdjacencyMatrix implements Grafo {
 	@Override
 	public void setarPeso(Vertice origem, Vertice destino, double peso) throws Exception {
 		this.weights[origem.id()][destino.id()] = peso;
+		
+		//changes weight on object edge
+		for(Aresta edge : a) {
+			if((edge.origem() == origem) && (edge.destino() == destino)) {
+				edge.setarPeso(peso);
+			}
+		}
 	}
 
 	@Override

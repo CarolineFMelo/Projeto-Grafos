@@ -9,7 +9,9 @@ public class AdjacencyList implements Grafo {
 	
 	public String[] line = null;
 	public ArrayList<Vertice> v = new ArrayList<Vertice>();
+	public ArrayList<Aresta> a = new ArrayList<Aresta>();
 	public List<ArrayList<Cell>> listAdj;
+	public int numEdges = 0;
 	
 	public AdjacencyList(ArrayList<String> file) throws Exception {
 		int numVertices = Integer.parseInt(file.get(0));
@@ -47,12 +49,16 @@ public class AdjacencyList implements Grafo {
 
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino) throws Exception {
+		a.add(new Aresta(origem, destino, numEdges));
 		this.listAdj.get(origem.id()).add(new Cell(destino, 1.0));
+		numEdges++;
 	}
 
 	@Override
 	public void adicionarAresta(Vertice origem, Vertice destino, double peso) throws Exception {
+		a.add(new Aresta(origem, destino, numEdges, peso));
 		this.listAdj.get(origem.id()).add(new Cell(destino, peso));
+		numEdges++;
 	}
 
 	@Override
@@ -124,6 +130,13 @@ public class AdjacencyList implements Grafo {
 		for(Cell cell : listAdj.get(origem.id())) {
             if(cell.getVertex() == destino) {
             	cell.setWeight(peso);
+            	
+            	//changes weight on object edge
+				for(Aresta edge : a) {
+					if((edge.origem() == origem) && (edge.destino() == destino)) {
+						edge.setarPeso(peso);
+					}
+				}
             }
         }
 	}

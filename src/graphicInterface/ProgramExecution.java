@@ -10,7 +10,6 @@ public class ProgramExecution {
 		TipoDeRepresentacao tr = null;
 		
 		//ask the file containing graph and the type of representation
-		//C:\Users\cferr\workspace\6-periodo\projeto_analise_algoritmos\Grafos\src\grafos\teste.txt
 		Scanner scn = new Scanner(System.in);
 		System.out.println("Digite o caminho para o arquivo:");
 		String file = scn.nextLine();
@@ -18,7 +17,6 @@ public class ProgramExecution {
 		String type = scn.nextLine();
 		
 		file = "C:\\Users\\cferr\\workspace\\6-periodo\\projeto_analise_algoritmos\\Grafos\\src\\grafos\\teste.txt";
-
 			
 		switch(type) {
 			case "1":
@@ -31,7 +29,14 @@ public class ProgramExecution {
 				tr = TipoDeRepresentacao.LISTA_DE_ADJACENCIA;
 				break;
 		}
+		Grafo grafo = ga.carregarGrafo(file, tr);
 		
-		ga.carregarGrafo(file, tr);
+		//ask the function to run
+		String function = null;
+		System.out.println("Escolha a função a ser executada:\n[1]Busca em profundidade\n[2]Busca em largura\n[3]Árvore geradora mínima\n[4]Caminho mínimo\n[5]Fluxo máximo\nDigite 0 para encerrar execucao");
+		function = scn.nextLine();
+		ga.forwardFunction(function);
+		scn.close();
+		System.out.println("Fim da execucao");
 	}
 }

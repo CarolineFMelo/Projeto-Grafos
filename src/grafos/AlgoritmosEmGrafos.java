@@ -102,7 +102,7 @@ public interface AlgoritmosEmGrafos {
     public double custoDoCaminho( Grafo g, ArrayList<Aresta> arestas, Vertice origem, Vertice destino ) throws Exception;
     
     /**
-     * Verifica se a sequencia de arestas é caminho entre oriem e destino.
+     * Verifica se a sequencia de arestas é caminho entre origem e destino.
      * @param arestas
      * @param origem
      * @param destino

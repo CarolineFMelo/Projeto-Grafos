@@ -2,6 +2,7 @@ package graphsFunctions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Scanner;
 
 import grafos.*;
 
@@ -32,6 +33,61 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 		}
 		
 		return null;
+	}
+	
+	public void forwardFunction(String function) {
+		switch(function) {
+			case "1":
+				buscaEmProfundidade(graph);
+				break;
+			case "2":
+				//buscaEmLargura(graph);
+				break;
+			case "3":
+				//agmUsandoKruskall(graph);
+				break;
+			case "4":
+				//int v[] = scannerFunction();
+	        	//caminhoMaisCurto(this.graph, this.graph.vertices().get(v[0]), this.graph.vertices().get(v[1]));
+				break;
+			case "5":
+				//custoDoCaminho();
+				break;
+		}
+	}
+	
+	public int[] scannerFunction() {
+		int answer[] = new int[2];
+		Scanner ask = new Scanner(System.in);
+		System.out.println("Digite o vertice de origem:");
+		if(ask.hasNextLine()) {
+		    String origemInput = ask.nextLine();
+		    System.out.println("Digite o vertice de destino:");
+		    if(ask.hasNextLine()) {
+		        String destinoInput = ask.nextLine();
+		        int origem = Integer.parseInt(origemInput);
+		        int destino = Integer.parseInt(destinoInput);
+
+		        //checks whether the inserted vertices are valid
+		        if(origem >= 0 && origem < this.graph.vertices().size() && destino >= 0 && destino < this.graph.vertices().size()) {
+		            answer[0] = origem;
+		            answer[1] = destino;
+		        }
+		        else {
+		            System.out.println("Vertice invalidos.");
+		        }
+		    }
+		    else {
+		        System.out.println("Entrada invalida para o vertice de destino.");
+		    }
+		}
+		else {
+		    System.out.println("Entrada invalida para o vertice de origem.");
+		}
+
+		ask.close();
+
+		return answer;
 	}
 
 	@Override
