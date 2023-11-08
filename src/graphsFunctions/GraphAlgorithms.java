@@ -3,6 +3,8 @@ package graphsFunctions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
+import java.util.Queue;
+import java.util.LinkedList;
 
 import grafos.*;
 
@@ -134,37 +136,84 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 
 	@Override
 	public Collection<Aresta> buscaEmLargura(Grafo g, int v) {
-		// TODO Auto-generated method stub
+		int color[] = new int[this.graph.numeroDeVertices()];
+		
+		for(int u = v; u < graph.numeroDeVertices(); u++) {
+			color[u] = branco;
+			this.d[u] = Integer.MAX_VALUE;
+			this.predecessor[u] = -1;
+		}
+		
+		for(int u = v; u < graph.numeroDeVertices(); u++) {
+			if(color[u] == branco) {
+				this.visitBfs(u, color);
+			}
+		}
+		
+		//prints discovery time and father of the vertex
+		for(int i = v; i < this.graph.numeroDeVertices(); i++) {
+			System.out.println("Vertice " + i + "\nTempo de descoberta: " + this.d[i] + "\nPai do vertice: " + this.predecessor[i] + "\n");
+		}
 		return null;
+	}
+	
+	//obtains the smallest number of edges between the vertex v and every vertex that can be reached
+	public void visitBfs(int u, int color[]) {
+		color[u] = cinza;
+		this.d[u] = 0;
+		Queue<Integer> queue = new LinkedList<Integer>();
+		queue.add(u);
+		
+		while(!queue.isEmpty()) {
+			Integer aux = queue.poll();
+			u = aux.intValue();
+			
+			if(!this.graph.adjListEmpty(u)) {
+				Aresta a = this.graph.firstAdj(u);
+				
+				while(a != null) {
+					int v = a.destino().id();
+					
+					if(color[v] == branco) {
+						color[v] = cinza;
+						this.d[v] = this.d[v] + 1;
+						this.predecessor[v] = u;
+						queue.add(v);
+					}
+					a = this.graph.nextAdj(u);
+				}
+			}
+			color[u] = preto;
+		}
 	}
 
 	@Override
 	public Collection<Aresta> buscaEmProfundidade(Grafo g, int v) {
 		int tempo = 0;
-		int cor[] = new int[this.graph.numeroDeVertices()];
+		int color[] = new int[this.graph.numeroDeVertices()];
 		
 		for(int u = v; u < graph.numeroDeVertices(); u++) {
-			cor[u] = branco;
+			color[u] = branco;
 			this.predecessor[u] = -1;
 		}
 		
 		for(int u = v; u < graph.numeroDeVertices(); u++) {
-			if(cor[u] == branco) {
-				tempo = this.visitDfs(u, tempo, cor);
+			if(color[u] == branco) {
+				tempo = this.visitDfs(u, tempo, color);
 			}
 		}
 		
 		//prints discovery and completion times
 		for(int i = v; i < this.graph.numeroDeVertices(); i++) {
-			System.out.println("Vertice " + i + "\nTempo de descoberta: " + this.d[i] + "\nTempo de finalização: " + this.t[i]);
+			System.out.println("Vertice " + i + "\nTempo de descoberta: " + this.d[i] + "\nTempo de finalização: " + this.t[i] + "\n");
 		}
 
 		return null;
 	}
 	
 	//visits blank vertex and returns time to DFS
-	private int visitDfs(int u, int tempo, int cor[]) {
-		cor[u] = cinza;
+	private int visitDfs(int u, int tempo, int color[]) {
+		color[u] = cinza;
 		this.d[u] = ++tempo;
 		
 		if(!this.graph.adjListEmpty(u)) {
@@ -173,14 +222,14 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 			while(a != null) {
 				int v = a.destino().id();
 				
-				if(cor[v] == branco) {
+				if(color[v] == branco) {
 					this.predecessor[v] = u;
-					tempo = this.visitDfs(v, tempo, cor);
+					tempo = this.visitDfs(v, tempo, color);
 				}
 				a = this.graph.nextAdj(u);
 			}
 		}
-		cor[u] = preto;
+		color[u] = preto;
 		this.t[u] = ++tempo;
 		
 		return tempo;
