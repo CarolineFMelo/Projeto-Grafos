@@ -49,13 +49,15 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 	
 	//run chosen function
 	public void forwardFunction(String function) {
+		int vertice;
 		switch(function) {
 			case "1":
-				int a = scannerFunctionForVertice();
-				buscaEmProfundidade(graph, a);
+				vertice = scannerFunctionForVertice();
+				buscaEmProfundidade(graph, vertice);
 				break;
 			case "2":
-				//buscaEmLargura(graph);
+				vertice = scannerFunctionForVertice();
+				buscaEmLargura(graph, vertice);
 				break;
 			case "3":
 				//agmUsandoKruskall(graph);
@@ -131,7 +133,7 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 	}
 
 	@Override
-	public Collection<Aresta> buscaEmLargura(Grafo g) {
+	public Collection<Aresta> buscaEmLargura(Grafo g, int v) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -141,25 +143,26 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 		int tempo = 0;
 		int cor[] = new int[this.graph.numeroDeVertices()];
 		
-		for(int u = 0; u < graph.numeroDeVertices(); u++) {
+		for(int u = v; u < graph.numeroDeVertices(); u++) {
 			cor[u] = branco;
 			this.predecessor[u] = -1;
 		}
-		for(int u = 0; u < graph.numeroDeVertices(); u++) {
+		
+		for(int u = v; u < graph.numeroDeVertices(); u++) {
 			if(cor[u] == branco) {
 				tempo = this.visitDfs(u, tempo, cor);
 			}
 		}
 		
 		//prints discovery and completion times
-		for(int i = 0; i < this.graph.numeroDeVertices(); i++) {
+		for(int i = v; i < this.graph.numeroDeVertices(); i++) {
 			System.out.println("Vertice " + i + "\nTempo de descoberta: " + this.d[i] + "\nTempo de finalização: " + this.t[i]);
 		}
 
 		return null;
 	}
 	
-	//visits blank vertex and returns time
+	//visits blank vertex and returns time to DFS
 	private int visitDfs(int u, int tempo, int cor[]) {
 		cor[u] = cinza;
 		this.d[u] = ++tempo;

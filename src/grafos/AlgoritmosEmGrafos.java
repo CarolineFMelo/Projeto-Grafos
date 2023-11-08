@@ -27,7 +27,7 @@ public interface AlgoritmosEmGrafos {
      * @param g Grafo
      * @return as arestas da árvore resultante
      */
-    public Collection<Aresta> buscaEmLargura (Grafo g);
+    public Collection<Aresta> buscaEmLargura (Grafo g, int v);
     
     /**
      * Realiza a busca em profundidade no grafo
