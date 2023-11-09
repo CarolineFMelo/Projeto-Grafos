@@ -566,14 +566,15 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 			}
 
 			double capacidadeMinima = Double.MAX_VALUE;
-
-			for(int v = destino.id(); v != origem.id(); v = (int) caminho[v]) {
-				int u = (int) caminho[v];
+			for(int i = 0; i < graph.numeroDeVertices() - 1; i++) {
+				int u = (int) caminho[i];
+				int v = (int) caminho[i + 1];
 				capacidadeMinima = Math.min(capacidadeMinima, capacidade[u][v] - fluxo[u][v]);
 			}
 
-			for(int v = destino.id(); v != origem.id(); v = (int) caminho[v]) {
-				int u = (int) caminho[v];
+			for(int i = 0; i < graph.numeroDeVertices() - 1; i++) {
+				int u = (int) caminho[i];
+				int v = (int) caminho[i + 1];
 				fluxo[u][v] += capacidadeMinima;
 				fluxo[v][u] -= capacidadeMinima;
 			}
@@ -581,29 +582,43 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 			fluxoMaximo += capacidadeMinima;
 		}
 		
-		System.out.println("Fluxo maximo: " + fluxoMaximo);
+		System.out.println("Fluxo maximo = " + fluxoMaximo);
 
 		return fluxoMaximo;
 	}
 
 	private double[] encontrarCaminho(Vertice origem, Vertice destino) {
-		boolean[] visited = new boolean[graph.numeroDeVertices()];
-		double[] pai = new double[graph.numeroDeVertices()];
+		boolean[] visitados = new boolean[graph.numeroDeVertices()];
+		int[] pai = new int[graph.numeroDeVertices()];
 		Queue<Integer> fila = new LinkedList<>();
 		fila.offer(origem.id());
-		visited[origem.id()] = true;
 
 		while(!fila.isEmpty()) {
 			int u = fila.poll();
+			visitados[u] = true;
 
 			for(int v = 0; v < graph.numeroDeVertices(); v++) {
-				if(!visited[v] && capacidade[u][v] - fluxo[u][v] > 0) {
+				if(!visitados[v] && capacidade[u][v] - fluxo[u][v] > 0) {
 					pai[v] = u;
-					visited[v] = true;
 					fila.offer(v);
 
 					if(v == destino.id()) {
-						return pai;
+						ArrayList<Integer> caminho = new ArrayList<>();
+						int atual = destino.id();
+
+						while (atual != origem.id()) {
+							caminho.add(atual);
+							atual = pai[atual];
+						}
+
+						caminho.add(origem.id());
+						double[] caminhoArray = new double[caminho.size()];
+
+						for (int i = 0; i < caminho.size(); i++) {
+							caminhoArray[i] = caminho.get(caminho.size() - i - 1);
+						}
+
+						return caminhoArray;
 					}
 				}
 			}
