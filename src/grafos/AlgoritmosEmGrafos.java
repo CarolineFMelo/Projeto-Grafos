@@ -58,8 +58,9 @@ public interface AlgoritmosEmGrafos {
      * Retorna a árvore geradora mínima utilizando o algoritmo Kruskall.
      * @param g O grafo.
      * @return Retorna a árvore geradora mínima utilizando o algoritmo Kruscall.
+     * @throws Exception 
      */
-    public Collection<Aresta> agmUsandoKruskall(Grafo g);
+    public Collection<Aresta> agmUsandoKruskall(Grafo g) throws Exception;
     
     /**
      * Calcula o custo de uma árvore geradora.

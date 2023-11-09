@@ -97,6 +97,12 @@ public interface Grafo {
      */
     public ArrayList<Vertice> vertices();
     
+    /**
+     * Retorna o conjunto de arestas do grafo.
+     * @return arestas do grafo.
+     */
+    public ArrayList<Aresta> arestas();
+    
     //retorna o peso da aresta
     public double getPeso(Vertice origem, Vertice destino);
     

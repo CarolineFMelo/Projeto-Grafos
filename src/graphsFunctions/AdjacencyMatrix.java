@@ -170,6 +170,11 @@ public class AdjacencyMatrix implements Grafo {
 	public ArrayList<Vertice> vertices() {
 		return v;
 	}
+	
+	@Override
+	public ArrayList<Aresta> arestas() {
+		return a;
+	}
 
 	@Override
 	public boolean adjListEmpty(int vId) {

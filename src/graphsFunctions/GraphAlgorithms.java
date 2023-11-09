@@ -1,10 +1,19 @@
 package graphsFunctions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.HashMap;
+import java.util.Map;
 
 import grafos.*;
 
@@ -14,10 +23,18 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 	private int n = 0;
 	private int d[] = null;
 	private int t[] = null;
+	private int tempoDescoberta[];
 	private int predecessor[] = null;
 	public static final byte branco = 0;
 	public static byte cinza = 1;
 	public static byte preto = 2;
+	public List<Aresta> treeEdges;
+	public List<Aresta> returnEdges;
+	public List<Aresta> advanceEdges;
+	public List<Aresta> crossingEdges;
+	private Collection<Aresta> aux = new ArrayList<Aresta>();
+	private double[][] capacidade;
+    private double[][] fluxo;
 
 	@Override
 	public Grafo carregarGrafo(String path, TipoDeRepresentacao t) throws Exception {
@@ -45,12 +62,19 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 		this.d = new int[n];
 		this.t = new int[n];
 		this.predecessor = new int[n];
+		this.capacidade = new double[n][n];
+	    this.fluxo = new double[n][n];
+		
+		treeEdges = new ArrayList<>();
+		returnEdges = new ArrayList<>();
+		advanceEdges = new ArrayList<>();
+		crossingEdges = new ArrayList<>();
 
 		return null;
 	}
 	
 	//run chosen function
-	public void forwardFunction(String function) {
+	public void forwardFunction(String function) throws Exception {
 		int vertice;
 		switch(function) {
 			case "1":
@@ -62,14 +86,15 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 				buscaEmLargura(graph, vertice);
 				break;
 			case "3":
-				//agmUsandoKruskall(graph);
+				agmUsandoKruskall(graph);
 				break;
 			case "4":
 				int v[] = scannerFunctionForOriginAndDestiny();
 	        	caminhoMaisCurto(this.graph, this.graph.vertices().get(v[0]), this.graph.vertices().get(v[1]));
 				break;
 			case "5":
-				//custoDoCaminho();
+				int x[] = scannerFunctionForOriginAndDestiny();
+				fluxoMaximo(this.graph.vertices().get(x[0]), this.graph.vertices().get(x[1]));
 				break;
 		}
 	}
@@ -137,7 +162,7 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 	@Override
 	public Collection<Aresta> buscaEmLargura(Grafo g, int v) {
 	    int color[] = new int[this.graph.numeroDeVertices()];
-	    int tempoDescoberta[] = new int[this.graph.numeroDeVertices()];
+	    tempoDescoberta = new int[this.graph.numeroDeVertices()];
 
 	    for(int u = v; u < graph.numeroDeVertices(); u++) {
 	        color[u] = branco;
@@ -152,10 +177,8 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 	            tempo = this.visitBfs(u, color, tempo, tempoDescoberta);
 	        }
 	    }
-
-	    for(int i = v; i < this.graph.numeroDeVertices(); i++) {
-	        System.out.println("Vertice " + i + "\nTempo de descoberta: " + tempoDescoberta[i] + "\nPai do vertice: " + this.predecessor[i] + "\n");
-	    }
+	    
+	    printBfs(v);
 
 	    return null;
 	}
@@ -193,7 +216,12 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 
 	    return tempo;
 	}
-
+	
+	public void printBfs(int v) {
+		for(int i = v; i < this.graph.numeroDeVertices(); i++) {
+	        System.out.println("Vertice " + i + "\nTempo de descoberta: " + tempoDescoberta[i] + "\nPai do vertice: " + this.predecessor[i] + "\n");
+	    }
+	}
 
 	@Override
 	public Collection<Aresta> buscaEmProfundidade(Grafo g, int v) {
@@ -211,11 +239,8 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 			}
 		}
 		
-		//prints discovery and completion times
-		for(int i = v; i < this.graph.numeroDeVertices(); i++) {
-			System.out.println("Vertice " + i + "\nTempo de descoberta: " + this.d[i] + "\nTempo de finalização: " + this.t[i] + "\n");
-		}
-
+		printDfs(v);
+		
 		return null;
 	}
 	
@@ -231,9 +256,21 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 				int v = a.destino().id();
 				
 				if(color[v] == branco) {
+					treeEdges.add(a);
 					this.predecessor[v] = u;
 					tempo = this.visitDfs(v, tempo, color);
 				}
+				else if(color[v] == cinza) {
+					returnEdges.add(a);
+                } 
+				else {
+                    if(d[u] < d[v]) {
+                    	advanceEdges.add(a);
+                    } else {
+                    	crossingEdges.add(a);
+                    }
+                }
+				
 				a = this.graph.nextAdj(u);
 			}
 		}
@@ -242,76 +279,336 @@ public class GraphAlgorithms implements AlgoritmosEmGrafos {
 		
 		return tempo;
 	}
+	
+	public void printDfs(int v) {
+		//prints discovery and completion times
+		for(int i = v; i < this.graph.numeroDeVertices(); i++) {
+			System.out.println("Vertice " + i + "\nTempo de descoberta: " + this.d[i] + "\nTempo de finalização: " + this.t[i] + "\n");
+		}
+				
+		if(treeEdges != null) {
+			for (Aresta aresta : treeEdges) {
+				System.out.println("Aresta de arvore: " + aresta.origem().id() + " - " + aresta.destino().id());
+			}
+		}
+				
+		if(returnEdges != null) {
+			for (Aresta aresta : returnEdges) {
+				System.out.println("Aresta de retorno: " + aresta.origem().id() + " - " + aresta.destino().id());
+			}
+		}
+				
+		if(advanceEdges != null) {
+			for (Aresta aresta : advanceEdges) {
+				System.out.println("Aresta de avanco: " + aresta.origem().id() + " - " + aresta.destino().id());
+			}
+		}
+				
+		if(crossingEdges != null) {
+			for (Aresta aresta : crossingEdges) {
+				System.out.println("Aresta de cruzamento: " + aresta.origem().id() + " - " + aresta.destino().id());
+			}	
+		}
+	}
 
 	@Override
 	public ArrayList<Aresta> menorCaminho(Grafo g, Vertice origem, Vertice destino) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		Queue<Vertice> queue = new LinkedList<>();
+        Map<Vertice, Aresta> arestaAnterior = new HashMap<Vertice, Aresta>();
+        Set<Vertice> visited = new HashSet<>();
+
+        queue.add(origem);
+        visited.add(origem);
+
+        while (!queue.isEmpty()) {
+            Vertice atual = queue.poll();
+            if (atual.equals(destino)) {
+                break;
+            }
+
+            for (Vertice vizinho : graph.adjacentesDe(atual)) {
+                if (!visited.contains(vizinho)) {
+                	queue.add(vizinho);
+                	visited.add(vizinho);
+                    arestaAnterior.put(vizinho, new Aresta(g.vertices().get(atual.id()), g.vertices().get(vizinho.id()), 0));
+                }
+            }
+        }
+
+        ArrayList<Aresta> minimumRoad = new ArrayList<>();
+        Vertice verticeAtual = destino;
+
+        while (arestaAnterior.containsKey(verticeAtual)) {
+            Aresta aresta = arestaAnterior.get(verticeAtual);
+            minimumRoad.add(aresta);
+            verticeAtual = new Vertice(aresta.origem().id());
+        }
+
+        Collections.reverse(minimumRoad);
+        
+        for (Aresta a : minimumRoad) {
+            System.out.println("Aresta: Origem: " + a.origem().id() + " Destino: " + a.destino().id());
+        }
+        
+        return minimumRoad;
 	}
 
 	@Override
 	public boolean existeCiclo(Grafo g) {
-		// TODO Auto-generated method stub
+		Collection<Aresta> aux = new ArrayList<Aresta>();
+		aux = arestasDeRetorno(g);
+		if(aux != null) {
+			return true;
+		}
 		return false;
 	}
 
 	@Override
-	public Collection<Aresta> agmUsandoKruskall(Grafo g) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Aresta> agmUsandoKruskall(Grafo g) throws Exception {
+		List<Aresta> todasArestas = new ArrayList<>(g.arestas());
+        todasArestas.sort(Comparator.comparingDouble(a -> a.peso()));
+
+        Set<Set<Vertice>> componentesConexas = new HashSet<>();
+        Collection<Aresta> agm = new ArrayList<>();
+
+        for (Aresta aresta : todasArestas) {
+            Vertice origem = new Vertice(aresta.origem().id());
+            Vertice destino = new Vertice(aresta.destino().id());
+
+            Set<Vertice> componenteOrigem = encontreComponenteConexa(componentesConexas, origem);
+            Set<Vertice> componenteDestino = encontreComponenteConexa(componentesConexas, destino);
+
+            if (!componenteOrigem.equals(componenteDestino)) {
+                agm.add(aresta);
+                componenteOrigem.addAll(componenteDestino);
+                componentesConexas.remove(componenteDestino);
+            }
+        }
+
+        for (Aresta a : agm) {
+            System.out.println("Aresta: Origem: " + a.origem().id() + " Destino: " + a.destino().id());
+        }
+
+        return agm;
 	}
+	
+	private Set<Vertice> encontreComponenteConexa(Set<Set<Vertice>> componentesConexas, Vertice v) {
+        for (Set<Vertice> componente : componentesConexas) {
+            if (componente.contains(v)) {
+                return componente;
+            }
+        }
+
+        Set<Vertice> novaComponente = new HashSet<>();
+        novaComponente.add(v);
+        componentesConexas.add(novaComponente);
+        
+        return novaComponente;
+    }
 
 	@Override
 	public double custoDaArvoreGeradora(Grafo g, Collection<Aresta> arestas) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		double total = 0.0;
+
+		for(Aresta aresta : arestas) {
+			total += aresta.peso();
+		}
+		
+		System.out.println("Custo total = " + total);
+
+		return total;
 	}
 
 	@Override
 	public boolean ehArvoreGeradora(Grafo g, Collection<Aresta> arestas) {
-		// TODO Auto-generated method stub
-		return false;
+	    Set<Vertice> vertexTree = new HashSet<>();
+	    for (Aresta aresta : arestas) {
+	        vertexTree.add(aresta.origem());
+	        vertexTree.add(aresta.destino());
+	    }
+
+	    if (vertexTree.size() != g.numeroDeVertices()) {
+	        return false;
+	    }
+
+	    Set<Vertice> visited = new HashSet<>();
+	    for (Aresta aresta : arestas) {
+	        Vertice origem = aresta.origem();
+	        Vertice destino = aresta.destino();
+
+	        if (visited.contains(origem) && visited.contains(destino)) {
+	            return false;
+	        }
+
+	        visited.add(origem);
+	        visited.add(destino);
+	    }
+
+	    return true;
 	}
 
 	@Override
 	public ArrayList<Aresta> caminhoMaisCurto(Grafo g, Vertice origem, Vertice destino) {
-		// TODO Auto-generated method stub
-		return null;
+		int numVertices = graph.numeroDeVertices();
+        List<Aresta> arestas = graph.arestas();
+
+        double[] distancia = new double[numVertices];
+        Arrays.fill(distancia, Double.MAX_VALUE);
+        distancia[origem.id()] = 0.0;
+
+        Aresta[] arestaAnterior = new Aresta[numVertices];
+
+        PriorityQueue<Vertice> filaDePrioridade = new PriorityQueue<>(Comparator.comparingDouble(v -> distancia[v.id()]));
+        filaDePrioridade.offer(origem);
+
+        while (!filaDePrioridade.isEmpty()) {
+            Vertice u = filaDePrioridade.poll();
+
+            for (Aresta aresta : arestas) {
+                if (aresta.origem() == graph.vertices().get(u.id())) {
+                    int v = aresta.destino().id();
+                    double pesoAresta = aresta.peso();
+
+                    if (distancia[v] > distancia[u.id()] + pesoAresta) {
+                        distancia[v] = distancia[u.id()] + pesoAresta;
+                        arestaAnterior[v] = aresta;
+
+                        filaDePrioridade.offer(new Vertice(v));
+                    }
+                }
+            }
+        }
+
+        ArrayList<Aresta> minimumRoad = new ArrayList<>();
+        int v = destino.id();
+        while (arestaAnterior[v] != null) {
+        	minimumRoad.add(arestaAnterior[v]);
+            v = arestaAnterior[v].origem().id();
+        }
+        Collections.reverse(minimumRoad);
+
+        for (Aresta a : minimumRoad) {
+            System.out.println("Aresta: Origem: " + a.origem().id() + " Destino: " + a.destino().id());
+        }
+        
+        return minimumRoad;
 	}
 
 	@Override
 	public double custoDoCaminho(Grafo g, ArrayList<Aresta> arestas, Vertice origem, Vertice destino) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		double total = 0;
+        int atual = origem.id();
+
+        for (Aresta aresta : arestas) {
+            if (aresta.origem().id() == atual) {
+                total += aresta.peso();
+                atual = aresta.destino().id();
+            }
+        }
+
+        if (atual != destino.id()) {
+            throw new IllegalArgumentException("O destino do caminho não corresponde ao vertice de destino fornecido.");
+        }
+        
+        System.out.println("Custo total do caminho = " + total);
+
+        return total;
 	}
 
 	@Override
 	public boolean ehCaminho(ArrayList<Aresta> arestas, Vertice origem, Vertice destino) {
-		// TODO Auto-generated method stub
-		return false;
+		int atual = origem.id();
+
+	    for(Aresta aresta : arestas) {
+		    if(aresta.origem().id() == atual) {
+		    	atual = aresta.destino().id();
+		    } 
+		    else {
+		    	return false;
+		    }
+	    }
+
+	    return atual == destino.id();
 	}
 
 	@Override
 	public Collection<Aresta> arestasDeArvore(Grafo g) {
-		// TODO Auto-generated method stub
-		return null;
+		aux = buscaEmProfundidade(g, 0);
+	    return treeEdges;
 	}
 
 	@Override
 	public Collection<Aresta> arestasDeRetorno(Grafo g) {
-		// TODO Auto-generated method stub
-		return null;
+		aux = buscaEmProfundidade(g, 0);
+        return returnEdges;
 	}
 
 	@Override
 	public Collection<Aresta> arestasDeAvanco(Grafo g) {
-		// TODO Auto-generated method stub
-		return null;
+		aux = buscaEmProfundidade(g, 0);
+        return advanceEdges;
 	}
 
 	@Override
 	public Collection<Aresta> arestasDeCruzamento(Grafo g) {
-		// TODO Auto-generated method stub
+		aux = buscaEmProfundidade(g, 0);
+		return crossingEdges;
+	}
+	
+	public double fluxoMaximo(Vertice origem, Vertice destino) {
+		double fluxoMaximo = 0;
+
+		while(true) {
+			double[] caminho = encontrarCaminho(origem, destino);
+
+			if(caminho == null) {
+				break;
+			}
+
+			double capacidadeMinima = Double.MAX_VALUE;
+
+			for(int v = destino.id(); v != origem.id(); v = (int) caminho[v]) {
+				int u = (int) caminho[v];
+				capacidadeMinima = Math.min(capacidadeMinima, capacidade[u][v] - fluxo[u][v]);
+			}
+
+			for(int v = destino.id(); v != origem.id(); v = (int) caminho[v]) {
+				int u = (int) caminho[v];
+				fluxo[u][v] += capacidadeMinima;
+				fluxo[v][u] -= capacidadeMinima;
+			}
+
+			fluxoMaximo += capacidadeMinima;
+		}
+		
+		System.out.println("Fluxo maximo: " + fluxoMaximo);
+
+		return fluxoMaximo;
+	}
+
+	private double[] encontrarCaminho(Vertice origem, Vertice destino) {
+		boolean[] visited = new boolean[graph.numeroDeVertices()];
+		double[] pai = new double[graph.numeroDeVertices()];
+		Queue<Integer> fila = new LinkedList<>();
+		fila.offer(origem.id());
+		visited[origem.id()] = true;
+
+		while(!fila.isEmpty()) {
+			int u = fila.poll();
+
+			for(int v = 0; v < graph.numeroDeVertices(); v++) {
+				if(!visited[v] && capacidade[u][v] - fluxo[u][v] > 0) {
+					pai[v] = u;
+					visited[v] = true;
+					fila.offer(v);
+
+					if(v == destino.id()) {
+						return pai;
+					}
+				}
+			}
+		}
+
 		return null;
 	}
 
