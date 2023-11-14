@@ -1,4 +1,4 @@
-package graphicInterface;
+package graphicExecution;
 
 import grafos.*;
 import java.util.Scanner;
@@ -15,9 +15,7 @@ public class ProgramExecution {
 		String file = scn.nextLine();
 		System.out.println("Escolha um tipo de representacao:\n[1]MATRIZ_DE_ADJACENCIA\n[2]MATRIZ_DE_INCIDENCIA\n[3]LISTA_DE_ADJACENCIA");
 		String type = scn.nextLine();
-		
-		file = "C:\\Users\\cferr\\workspace\\6-periodo\\projeto_analise_algoritmos\\Grafos\\src\\grafos\\teste.txt";
-			
+					
 		switch(type) {
 			case "1":
 				tr = TipoDeRepresentacao.MATRIZ_DE_ADJACENCIA;
